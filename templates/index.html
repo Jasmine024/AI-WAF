@@ -11,10 +11,6 @@
             padding-top: 100px;
         }
 
-        h1 {
-            margin-bottom: 40px;
-        }
-
         textarea {
             width: 60%;
             height: 100px;
@@ -41,9 +37,9 @@
             font-weight: bold;
         }
 
-        .dashboard-link {
-            margin-top: 40px;
+        a {
             display: block;
+            margin-top: 40px;
             color: #38bdf8;
         }
     </style>
@@ -60,11 +56,11 @@
 
     {% if prediction %}
         <div class="result">
-            Prediction: {{ prediction }}
+            {{ prediction }}
         </div>
     {% endif %}
 
-    <a class="dashboard-link" href="/dashboard">View Dashboard</a>
+    <a href="/dashboard">Go to Dashboard</a>
 
 </body>
 </html>
