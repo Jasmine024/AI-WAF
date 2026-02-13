@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI-Based Web Application Firewall</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+        }
+
+        textarea {
+            width: 60%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .dashboard-link {
+            margin-top: 40px;
+            display: block;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>AI-Based Web Application Firewall</h1>
+
+    <form method="POST">
+        <textarea name="user_input" placeholder="Enter input to test for attack..."></textarea>
+        <br>
+        <button type="submit">Check Input</button>
+    </form>
+
+    {% if prediction %}
+        <div class="result">
+            Prediction: {{ prediction }}
+        </div>
+    {% endif %}
+
+    <a class="dashboard-link" href="/dashboard">View Dashboard</a>
+
+</body>
+</html>
