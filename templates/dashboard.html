@@ -77,8 +77,6 @@
 <h2>Attack Distribution</h2>
 <canvas id="attackChart"></canvas>
 
-<h2>Attack Trend Over Time</h2>
-<canvas id="trendChart"></canvas>
 
 <h2>Last 10 Logs</h2>
 <table>
@@ -113,18 +111,7 @@
         }
     });
 
-    const trendChart = new Chart(document.getElementById('trendChart'), {
-        type: 'line',
-        data: {
-            labels: {{ time_labels | tojson }},
-            datasets: [{
-                label: 'Attacks per Day',
-                data: {{ attack_counts | tojson }},
-                fill: false,
-                tension: 0.2
-            }]
-        }
-    });
+   
 </script>
 
 </body>
