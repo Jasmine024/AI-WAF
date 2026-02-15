@@ -2,31 +2,79 @@
 <html>
 <head>
     <title>AI-WAF Dashboard</title>
-    <meta http-equiv="refresh" content="5">
 
     <style>
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
-            color: #00ffcc;
+            background: #0a0f1c;
+            color: #00ff9f;
+            font-family: 'Courier New', monospace;
+            text-align: center;
         }
 
         h1 {
-            text-align: center;
-            padding: 20px;
-            color: #00ffff;
-            text-shadow: 0 0 15px #00ffff;
-            letter-spacing: 2px;
+            margin-top: 20px;
         }
 
-        .alert-banner {
-            text-align: center;
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px;
+        }
+
+        .card {
+            background: #111a2e;
+            padding: 20px;
+            border-radius: 10px;
+            width: 180px;
+            box-shadow: 0 0 15px #00ff9f44;
+        }
+
+        input {
+            padding: 10px;
+            width: 300px;
+            margin-top: 15px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #00ff9f;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        table {
+            margin: auto;
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 95%;
+        }
+
+        th, td {
+            border: 1px solid #00ff9f44;
+            padding: 8px;
+        }
+
+        th {
+            background: #111a2e;
+        }
+
+        .high {
+            color: red;
+            font-weight: bold;
+        }
+
+        #alertBanner {
+            display: none;
             background: red;
             color: white;
-            padding: 12px;
+            padding: 15px;
+            font-size: 20px;
             font-weight: bold;
-            display: none;
             animation: blink 1s infinite;
         }
 
@@ -34,235 +82,113 @@
             50% { opacity: 0.5; }
         }
 
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            padding: 20px;
-        }
-
-        .card {
-            background: #111;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px #00ffff55;
-            width: 28%;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: 0.3s;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px #00ffffaa;
-        }
-
-        .card h2 {
-            margin: 0;
-            font-size: 18px;
-            color: #aaa;
-        }
-
-        .card h3 {
-            font-size: 28px;
+        .stop-btn {
+            background: black;
+            color: white;
+            border: 2px solid red;
             margin-top: 10px;
-            color: #00ffff;
-        }
-
-        .high {
-            color: #ff3c3c;
-            font-weight: bold;
-            text-shadow: 0 0 5px red;
-        }
-
-        .medium {
-            color: orange;
-            font-weight: bold;
-        }
-
-        .low {
-            color: #00ff00;
-            font-weight: bold;
-        }
-
-        table {
-            width: 95%;
-            margin: auto;
-            border-collapse: collapse;
-            margin-top: 30px;
-            background: #111;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px #00ffff33;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #00ffff33;
-            text-align: center;
-        }
-
-        th {
-            background: #0a0a0a;
-            color: #00ffff;
-            font-size: 14px;
-        }
-
-        tr:hover {
-            background: #1f1f1f;
-        }
-
-        .form-box {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        input {
-            padding: 12px;
-            width: 300px;
-            background: #000;
-            color: #00ffcc;
-            border: 1px solid #00ffff;
-            border-radius: 5px;
-        }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 10px #00ffff;
-        }
-
-        button {
-            padding: 12px 25px;
-            background: #00ffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #00ccaa;
-            box-shadow: 0 0 10px #00ffff;
         }
 
         .logout {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .logout a {
-            color: #ff3c3c;
-            font-weight: bold;
-            text-decoration: none;
-            border: 1px solid #ff3c3c;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
-        .logout a:hover {
-            background: #ff3c3c;
-            color: black;
-        }
-
-        @media (max-width: 768px) {
-            .card { width: 90%; }
-            input { width: 80%; }
+            margin-top: 20px;
         }
     </style>
 </head>
 
 <body>
 
-<div class="alert-banner" id="alertBanner">
+<div id="alertBanner">
     🚨 HIGH SEVERITY ATTACK DETECTED 🚨
+    <br>
+    <button class="stop-btn" onclick="stopAlarm()">STOP ALARM</button>
 </div>
 
 <h1>🛡 AI-Based Web Application Firewall Dashboard</h1>
 
 <div class="stats">
     <div class="card">
-        <h2>Total Requests</h2>
-        <h3>{{ total_requests }}</h3>
+        <h3>Total Requests</h3>
+        <p>{{ total_requests }}</p>
     </div>
 
     <div class="card">
-        <h2>Total Attacks</h2>
-        <h3>{{ total_attacks }}</h3>
+        <h3>Total Attacks</h3>
+        <p>{{ total_attacks }}</p>
     </div>
 
     <div class="card">
-        <h2>Attack Rate</h2>
-        <h3>{{ attack_rate }}%</h3>
+        <h3>Attack Rate</h3>
+        <p>{{ attack_rate }}%</p>
     </div>
 </div>
 
-<div class="form-box">
-    <h2>Test Request</h2>
-    <form action="{{ url_for('predict') }}" method="POST">
-        <input type="text" name="input" placeholder="Enter request..." required>
-        <button type="submit">Check</button>
-    </form>
-</div>
+<h3>Test Request</h3>
+<form method="POST" action="/check">
+    <input type="text" name="user_input" placeholder="Enter request..." required>
+    <br><br>
+    <button type="submit">Check</button>
+</form>
 
-<h2 style="text-align:center; margin-top:40px;">Last 10 Logs</h2>
+<h3>Last 10 Logs</h3>
 
 <table>
-<tr>
-    <th>Time</th>
-    <th>IP</th>
-    <th>Input</th>
-    <th>Type</th>
-    <th>Confidence</th>
-    <th>Severity</th>
-</tr>
+    <tr>
+        <th>Time</th>
+        <th>IP</th>
+        <th>Input</th>
+        <th>Type</th>
+        <th>Confidence</th>
+        <th>Severity</th>
+    </tr>
 
-{% for log in logs %}
-<tr>
-    <td>{{ log[1] }}</td>
-    <td>{{ log[2] }}</td>
-    <td>{{ log[3] }}</td>
-    <td>{{ log[4] }}</td>
-    <td>{{ log[5] }}%</td>
-    <td class="{% if log[6] == 'HIGH' %}high{% elif log[6] == 'MEDIUM' %}medium{% else %}low{% endif %}">
-        {{ log[6] }}
-    </td>
-</tr>
-{% endfor %}
+    {% for log in logs %}
+    <tr>
+        <td>{{ log[1] }}</td>
+        <td>{{ log[2] }}</td>
+        <td>{{ log[3] }}</td>
+        <td>{{ log[4] }}</td>
+        <td>{{ log[5] }}%</td>
+        <td class="{% if log[6] == 'HIGH' %}high{% endif %}">
+            {{ log[6] }}
+        </td>
+    </tr>
+    {% endfor %}
 </table>
 
-<div class="logout">
-    <a href="{{ url_for('logout') }}">Logout</a>
-</div>
+<br>
 
-<audio id="alarmSound">
+<a href="/logout">
+    <button class="logout">Logout</button>
+</a>
+
+<!-- 🔊 ALARM SOUND -->
+<audio id="alarmSound" loop>
     <source src="{{ url_for('static', filename='alarm.mp3') }}" type="audio/mpeg">
 </audio>
 
 <script>
 let audio = document.getElementById("alarmSound");
-let audioUnlocked = false;
 
-document.addEventListener("click", function () {
-    if (!audioUnlocked) {
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            audioUnlocked = true;
-        }).catch(() => {});
-    }
-});
+// Browser autoplay unlock
+document.addEventListener("click", function() {
+    audio.play().then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+    }).catch(() => {});
+}, { once: true });
 
+// Stop function
+function stopAlarm() {
+    audio.pause();
+    audio.currentTime = 0;
+    document.getElementById("alertBanner").style.display = "none";
+}
+
+// If latest log is HIGH → trigger alarm
 {% if logs and logs[0][6] == 'HIGH' %}
 window.onload = function() {
     document.getElementById("alertBanner").style.display = "block";
-
-    setTimeout(function() {
-        if (audioUnlocked) {
-            audio.play();
-        }
-    }, 500);
+    audio.play();
 };
 {% endif %}
 </script>
