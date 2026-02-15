@@ -209,62 +209,63 @@
 <h2 style="text-align:center; margin-top:40px;">Last 10 Logs</h2>
 
 <table>
-    <tr>
-        <th>Time</th>
-        <th>IP</th>
-        <th>Input</th>
-        <th>Type</th>
-        <th>Confidence</th>
-        <th>Severity</th>
-    </tr>
+<tr>
+    <th>Time</th>
+    <th>IP</th>
+    <th>Input</th>
+    <th>Type</th>
+    <th>Confidence</th>
+    <th>Severity</th>
+</tr>
 
-    {% for log in logs %}
-    <tr>
-        <td>{{ log[1] }}</td>
-        <td>{{ log[2] }}</td>
-        <td>{{ log[3] }}</td>
-        <td>{{ log[4] }}</td>
-        <td>{{ log[5] }}%</td>
-        <td class="{% if log[6] == 'HIGH' %}high{% elif log[6] == 'MEDIUM' %}medium{% else %}low{% endif %}">
-            {{ log[6] }}
-        </td>
-    </tr>
-    {% endfor %}
+{% for log in logs %}
+<tr>
+    <td>{{ log[1] }}</td>
+    <td>{{ log[2] }}</td>
+    <td>{{ log[3] }}</td>
+    <td>{{ log[4] }}</td>
+    <td>{{ log[5] }}%</td>
+    <td class="{% if log[6] == 'HIGH' %}high{% elif log[6] == 'MEDIUM' %}medium{% else %}low{% endif %}">
+        {{ log[6] }}
+    </td>
+</tr>
+{% endfor %}
 </table>
 
 <div class="logout">
     <a href="{{ url_for('logout') }}">Logout</a>
 </div>
-<script>
-let audioUnlocked = false;
-let alertSound = new Audio("https://www.soundjay.com/button/beep-07.wav");
 
-// Unlock sound after first user interaction
+<audio id="alarmSound">
+    <source src="{{ url_for('static', filename='alarm.mp3') }}" type="audio/mpeg">
+</audio>
+
+<script>
+let audio = document.getElementById("alarmSound");
+let audioUnlocked = false;
+
 document.addEventListener("click", function () {
     if (!audioUnlocked) {
-        alertSound.play().then(() => {
-            alertSound.pause();
-            alertSound.currentTime = 0;
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
             audioUnlocked = true;
-            console.log("Audio unlocked");
         }).catch(() => {});
     }
 });
 
 {% if logs and logs[0][6] == 'HIGH' %}
 window.onload = function() {
-
     document.getElementById("alertBanner").style.display = "block";
 
-    alert("🚨 HIGH SEVERITY ATTACK DETECTED!");
-
-    if (audioUnlocked) {
-        alertSound.play();
-    } else {
-        console.log("Click anywhere to enable sound.");
-    }
+    setTimeout(function() {
+        if (audioUnlocked) {
+            audio.play();
+        }
+    }, 500);
 };
 {% endif %}
 </script>
+
 </body>
 </html>
