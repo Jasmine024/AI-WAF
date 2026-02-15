@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI-Based Web Application Firewall</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            padding: 20px;
+        }
+
+        a {
+            color: #ef4444;
+            text-decoration: none;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.4);
+        }
+
+        .chart-container {
+            width: 500px;
+            margin: 30px auto;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #3b82f6;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: #1e293b;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #334155;
+        }
+
+        th {
+            background: #334155;
+        }
+    </style>
+</head>
+<body>
+
+<h1>AI-Based Web Application Firewall Dashboard</h1>
+
+<a href="/logout">Logout</a>
+<br><br>
+
+<a href="/download_logs">
+    <button>Download Logs (CSV)</button>
+</a>
+
+<div class="cards">
+    <div class="card">
+        <h3>Total Requests</h3>
+        <h2>{{ total_requests }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Total Attacks</h3>
+        <h2>{{ total_attacks }}</h2>
+    </div>
+
+    <div class="card">
+        <h3>Attack Rate</h3>
+        <h2>{{ attack_rate }}%</h2>
+    </div>
+</div>
+
+<h2>Attack Distribution</h2>
+<div class="chart-container">
+    <canvas id="attackChart"></canvas>
+</div>
+
+<h2>Attack Trend Over Time</h2>
+<div class="chart-container">
+    <canvas id="trendChart"></canvas>
+</div>
+
+<h2>Test Request</h2>
+
+<form action="/predict" method="POST">
+    <input type="text" name="input_text" placeholder="Enter request..." required>
+    <button type="submit">Check</button>
+</form>
+
+<h2>Last 10 Logs</h2>
+
+<table>
+    <tr>
+        <th>Timestamp</th>
+        <th>Input</th>
+        <th>Type</th>
+        <th>Confidence (%)</th>
+    </tr>
+
+    {% for log in logs %}
+    <tr>
+        <td>{{ log[0] }}</td>
+        <td>{{ log[1] }}</td>
+        <td>{{ log[2] }}</td>
+        <td>{{ log[3] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+window.onload = function() {
+
+    const totalAttacks = {{ total_attacks }};
+    const totalRequests = {{ total_requests }};
+    const normalCount = totalRequests - totalAttacks;
+
+    // Doughnut Chart
+    const ctx = document.getElementById('attackChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Attacks', 'Normal'],
+            datasets: [{
+                data: [totalAttacks, normalCount],
+                backgroundColor: ['#ef4444', '#22c55e']
+            }]
+        }
+    });
+
+    // Line Chart
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ trend_labels | tojson }},
+            datasets: [{
+                label: 'Attacks',
+                data: {{ trend_values | tojson }},
+                borderColor: '#3b82f6',
+                fill: false,
+                tension: 0.3
+            }]
+        }
+    });
+};
+</script>
+
+</body>
+</html>
